@@ -47,6 +47,7 @@ const (
 	// negotiation policy tag name
 	SSLNegotiationPolicyNameFormat = "k8s-SSLNegotiationPolicy-%s"
 
+	lbAttrDeleteProtectionEnabled       = "delete_protection.enabled"
 	lbAttrLoadBalancingCrossZoneEnabled = "load_balancing.cross_zone.enabled"
 	lbAttrAccessLogsS3Enabled           = "access_logs.s3.enabled"
 	lbAttrAccessLogsS3Bucket            = "access_logs.s3.bucket"
@@ -398,6 +399,22 @@ func (c *Cloud) ensureLoadBalancerv2(namespacedName types.NamespacedName, loadBa
 
 func (c *Cloud) reconcileLBAttributes(loadBalancerArn string, annotations map[string]string) error {
 	desiredLoadBalancerAttributes := map[string]string{}
+
+	desiredLoadBalancerAttributes[lbAttrDeleteProtectionEnabled] = "false"
+	deleteProtectionEnabledAnnotation := annotations[ServiceAnnotationLoadBalancerDeleteProtection]
+	if deleteProtectionEnabledAnnotation != "" {
+		deleteProtectionEnabled, err := strconv.ParseBool(deleteProtectionEnabledAnnotation)
+		if err != nil {
+			return fmt.Errorf("error parsing service annotation: %s=%s",
+				ServiceAnnotationLoadBalancerDeleteProtection,
+				deleteProtectionEnabledAnnotation,
+			)
+		}
+
+		if deleteProtectionEnabled {
+			desiredLoadBalancerAttributes[lbAttrDeleteProtectionEnabled] = "true"
+		}
+	}
 
 	desiredLoadBalancerAttributes[lbAttrLoadBalancingCrossZoneEnabled] = "false"
 	crossZoneLoadBalancingEnabledAnnotation := annotations[ServiceAnnotationLoadBalancerCrossZoneLoadBalancingEnabled]

@@ -95,6 +95,10 @@ const TagNameSubnetPublicELB = "kubernetes.io/role/elb"
 // value is "nlb"
 const ServiceAnnotationLoadBalancerType = "service.beta.kubernetes.io/aws-load-balancer-type"
 
+// ServiceAnnotationLoadBalancerDeleteProtection is the annotation
+// to enable/disable delete protection
+const ServiceAnnotationLoadBalancerDeleteProtection = "service.beta.kubernetes.io/aws-load-balancer-delete-protection"
+
 // ServiceAnnotationLoadBalancerInternal is the annotation used on the service
 // to indicate that we want an internal ELB.
 const ServiceAnnotationLoadBalancerInternal = "service.beta.kubernetes.io/aws-load-balancer-internal"
